@@ -10,7 +10,7 @@
       
     </head>
     <body class="hold-transition sidebar-mini">
-        <div class="wrapper">
+        <div class="wrapper" id="app">
             <nav class="main-header navbar navbar-expand navbar-white navbar-light">
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -156,61 +156,61 @@
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <li class="nav-item ">
-                                <a href="/admin/dashboard" class="nav-link">
+                                <router-link active-class="active" to="/admin/dashboard" class="nav-link">
                                     <i class="nav-icon fas fa-tachometer-alt"></i>
                                     <p>
                                         Dashboard
                                        
                                     </p>
-                                </a> 
+                                </router-link> 
                             </li>
                         
                             <li class="nav-item ">
-                                <a href="/admin/appointments" class="nav-link ">
+                                <router-link active-class="active" to="/admin/appointments" class="nav-link ">
                                     <i class="nav-icon fas fa-calendar"></i>
                                     <p>
                                         Appointments
                                     
                                     </p>
-                                </a> 
+                                </router-link> 
                             </li>
                             <li class="nav-item ">
-                                <a href="#" class="nav-link ">
-                                    <i class="nav-icon fas fa-user"></i>
+                                <router-link active-class="active" to="/admin/users" class="nav-link ">
+                                    <i class="nav-icon fas fa-users"></i>
                                     <p>
                                         Users
                                     
                                     </p>
-                                </a>
+                                </router-link>
                             </li>
                             <li class="nav-item ">
-                                <a href="#" class="nav-link ">
+                                <router-link active-class="active" to="/admin/profile" class="nav-link ">
                                     <i class="nav-icon fas fa-user"></i>
                                     <p>
                                         Profile
                                     
                                     </p>
-                                </a>
+                                </router-link>
                             </li>   
                             <li class="nav-item ">
-                                <a href="#" class="nav-link ">
+                                <router-link active-class="active" to="/admin/settings" class="nav-link ">
                                     
                                     <i class="nav-icon fas fa-cog"></i>
                                     <p>
                                         Settings
                                     
                                     </p>
-                                </a>
+                                </router-link>
                             </li>
                             <li class="nav-item ">
-                                <a href="#" class="nav-link ">
+                                <router-link active-class="active" to="/admin/logout" class="nav-link ">
                                     
                                     <i class="nav-icon fas fa-sign-out-alt"></i>
                                     <p>
                                         Logout
                                     
                                     </p>
-                                </a>
+                                </router-link>
                             </li>
                             
                         </ul>
@@ -218,7 +218,7 @@
                 </div>
             </aside>
 
-            <div class="content-wrapper">
+            <div class="content-wrapper" >
                 <router-view></router-view>
                
             </div>

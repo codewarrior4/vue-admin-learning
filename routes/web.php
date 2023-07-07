@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+ 
+Route::get('/api/users',[UserController::class,'index']);
 
-Route::view('/admin/dashboard','dashboard');
-
-Route::get('{view',ApplicationController::class)->where('view','(.*)');
+Route::get('{view}',ApplicationController::class)->where('view','(.*)');
