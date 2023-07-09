@@ -2,6 +2,8 @@
 
     import { onMounted,ref,reactive } from 'vue'
     import axios from 'axios' 
+    import {Form,Field} from 'vee-validate'
+    import * as yup from 'yup'
 
 
     const users =  ref([])
@@ -23,18 +25,23 @@
         password:''
     })
 
-    const createuser =()=>{
-        axios .post('/api/users',form).then((response) =>{
+    const schema = yup.object({
+        name: yup.string().required(),
+        email: yup.string().required().email(),
+        password: yup.string().required().min(8)
+    })
+
+    const createuser = (values,{resetForm}) =>{
+        axios .post('/api/users',values).then((response) =>{
             
             $('#createUserModal').modal('hide')
-            form.name = ''
-            form.email = ''
-            form.password = ''
+            resetForm()
             getUsers()
         }).catch((error) =>{
             console.log(error)
         })
     }
+ 
 
     onMounted(() => {
         getUsers()
@@ -83,7 +90,7 @@
                                 <td>
                                     <a href="mailto:{{user.email }}" target="_blank">{{ user.email }} </a>
                                 </td>
-                                <td>2020-01-01</td>
+                                <td>{{ user.created_at }}</td>
                                 <td>2020-01-01</td>
 
                             </tr>
@@ -104,31 +111,34 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form autocomplete="off">
+                <Form action="" @submit="createuser" :validation-schema="schema" v-slot="{errors}">
+                    <div class="modal-body"> 
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" v-model="form.name" class="form-control " id="name"
-                                aria-describedby="nameHelp" placeholder="Enter full name">
+                            <Field type="text" name ="name" class="form-control " id="name"
+                                aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.name }" />
+                                <span class="invalid-feedback">{{ errors.name }}</span>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" v-model="form.email" class="form-control " id="email"
-                                aria-describedby="nameHelp" placeholder="Enter full name">
-                        </div>
-                    </form>
+                            <Field type="email" name ="email" class="form-control " id="email"
+                                aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.email }" />
+                                <span class="invalid-feedback">{{ errors.email }}</span>
+                        </div> 
 
                     <div class="form-group">
                         <label for="email">Password</label>
-                        <input type="password" v-model="form.password" class="form-control " id="password"
-                            aria-describedby="nameHelp" placeholder="Enter password">
+                        <Field type="password" name ="password" class="form-control " id="password"
+                            aria-describedby="nameHelp" placeholder="Enter password" :class="{'is-invalid' :errors.password }" />
+                            <span class="invalid-feedback">{{ errors.password }}</span>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" @click="createuser" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
+            </Form>
             </div>
         </div>
     </div>
