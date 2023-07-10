@@ -51,7 +51,7 @@
             // form.value.resetForm() 
             resetForm()
             getUsers()
-            toastr.info('User created Successfully')
+            toastr.success('User created Successfully')
         }).catch((error) =>{
             if(error.response.data.errors){
                 setFieldError('email',error.response.data.errors.email[0])
@@ -69,7 +69,7 @@
 
             $('#createUserModal').modal('hide')
             resetForm()
-            toastr.info('User updated Successfully')
+            toastr.success('User updated Successfully')
 
             // getUsers()
         }).catch((error) =>{
