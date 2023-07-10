@@ -7,41 +7,103 @@
 
 
     const users =  ref([])
+    const editing = ref(false)
+    const formValues = ref()
+    const form  = ref(null)
 
     const getUsers = () =>{
         axios.get('/api/users')
         .then(response => {
-            users.value = response.data
-            console.log(users.value);
+            users.value = response.data 
         })
         .catch(error => {
             console.log(error)
         })
     }
+ 
 
-    const form  = reactive({
-        name:'',
-        email:'',
-        password:''
-    })
-
-    const schema = yup.object({
+    const createUserSchema = yup.object({
         name: yup.string().required(),
         email: yup.string().required().email(),
         password: yup.string().required().min(8)
     })
 
-    const createuser = (values,{resetForm}) =>{
+    const editUserSchema = yup.object({
+        name: yup.string().required(),
+        email: yup.string().required().email(), 
+        password: yup.string().when((password,schema)=>{
+            if(password.length > 0){
+                return schema.min(8)
+            }else{
+                return schema
+            }
+        })
+    })
+
+    
+
+    const createuser = (values) =>{
         axios .post('/api/users',values).then((response) =>{
             
             $('#createUserModal').modal('hide')
-            resetForm()
+            form.value.resetForm() 
             getUsers()
         }).catch((error) =>{
             console.log(error)
         })
     }
  
+    const updateUser = (values) =>{
+         
+        axios.put('/api/users/'+formValues.value.id,values).then((response) =>{
+
+            // short way with not hitting api again
+            const index = users.value.findIndex(user =>user.id === response.data.id)
+            users.value[index] = response.data
+
+            $('#createUserModal').modal('hide')
+            // getUsers()
+        }).catch((error) =>{
+            console.log(error)
+        }).finally(() =>{
+            editing.value = false
+            form.value.resetForm()
+        })
+         
+        form.value.resetForm()
+        $('#createUserModal').modal('hide')
+    }
+
+    const editUser = (user) => {
+        editing.value = true
+        form.value.resetForm() 
+        $('#createUserModal').modal('show')
+        formValues.value= {
+            id:user.id,
+            name:user.name,
+            email:user.email
+        }
+    }
+
+    const addUser = () =>{
+        editing.value = false
+        $('#createUserModal').modal('show')
+        
+    }
+
+    const handleSubmit = (values) =>{
+        if(editing.value){
+            updateUser(values)
+        }else{
+            createuser(values )
+        }
+    }
+
+    const closeModal= ()=>{
+        editing.value = false
+        $('#createUserModal').modal('hide')
+        formValues.value = ''
+    }
 
     onMounted(() => {
         getUsers()
@@ -68,8 +130,8 @@
     <div class="content">
         <div class="container-fluid">
              <!-- creeate a bootstrap datatable  -->
-             <button type="button" class="mb-4 btn btn-primary" data-toggle="modal" data-target="#createUserModal">
-                Add New User
+             <button type="button" class="mb-4 btn btn-primary" @click="addUser">
+                Add new User
             </button>
              <div class="card">
                 <div class="card-body">
@@ -79,8 +141,9 @@
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Created At</th>
-                                <th>Updated At</th>
+                                <th>Registered</th>
+                                <th>Role</th>
+                                <th>Options</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -92,6 +155,11 @@
                                 </td>
                                 <td>{{ user.created_at }}</td>
                                 <td>2020-01-01</td>
+                                <td><a href="#"
+                                    @click.prevent="editUser(user)"
+                                    >
+                                    <i class="fa fa-edit"></i>
+                                </a></td>
 
                             </tr>
                         </tbody>
@@ -106,12 +174,15 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Add New User</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                        <span v-if="editing">Edit User</span>
+                        <span v-else>Add New User</span>
+                    </h5>
+                    <button type="button" class="close" @click="closeModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <Form action="" @submit="createuser" :validation-schema="schema" v-slot="{errors}">
+                <Form  ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors}" :initial-values="formValues">
                     <div class="modal-body"> 
                         <div class="form-group">
                             <label for="name">Name</label>
@@ -135,7 +206,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </Form>
