@@ -4,12 +4,14 @@
     import axios from 'axios' 
     import {Form,Field} from 'vee-validate'
     import * as yup from 'yup'
+    import {useToastr} from '../../utils/toaster'
 
 
     const users =  ref([])
     const editing = ref(false)
     const formValues = ref()
     const form  = ref(null)
+    const toastr = useToastr()
 
     const getUsers = () =>{
         axios.get('/api/users')
@@ -49,6 +51,7 @@
             // form.value.resetForm() 
             resetForm()
             getUsers()
+            toastr.info('User created Successfully')
         }).catch((error) =>{
             if(error.response.data.errors){
                 setFieldError('email',error.response.data.errors.email[0])
@@ -66,6 +69,8 @@
 
             $('#createUserModal').modal('hide')
             resetForm()
+            toastr.info('User updated Successfully')
+
             // getUsers()
         }).catch((error) =>{
             console.log(error)
@@ -109,6 +114,7 @@
 
     onMounted(() => {
         getUsers()
+        
     })
 </script>
 
