@@ -1,6 +1,6 @@
 <script setup>
 
-    import { onMounted,ref,reactive } from 'vue'
+    import { onMounted,ref } from 'vue'
     import axios from 'axios' 
     import {Form,Field} from 'vee-validate'
     import * as yup from 'yup'
@@ -42,18 +42,21 @@
 
     
 
-    const createuser = (values) =>{
+    const createuser = (values,{resetForm,setFieldError}) =>{
         axios .post('/api/users',values).then((response) =>{
             
             $('#createUserModal').modal('hide')
-            form.value.resetForm() 
+            // form.value.resetForm() 
+            resetForm()
             getUsers()
         }).catch((error) =>{
-            console.log(error)
+            if(error.response.data.errors){
+                setFieldError('email',error.response.data.errors.email[0])
+            }
         })
     }
  
-    const updateUser = (values) =>{
+    const updateUser = (values,{resetForm,setErrors}) =>{
          
         axios.put('/api/users/'+formValues.value.id,values).then((response) =>{
 
@@ -62,16 +65,14 @@
             users.value[index] = response.data
 
             $('#createUserModal').modal('hide')
+            resetForm()
             // getUsers()
         }).catch((error) =>{
             console.log(error)
-        }).finally(() =>{
-            editing.value = false
-            form.value.resetForm()
-        })
-         
-        form.value.resetForm()
-        $('#createUserModal').modal('hide')
+            if(error.response.data.errors){
+                setErrors(error.response.data.errors)
+            } 
+        }) 
     }
 
     const editUser = (user) => {
@@ -82,7 +83,7 @@
             id:user.id,
             name:user.name,
             email:user.email
-        }
+        } 
     }
 
     const addUser = () =>{
@@ -91,11 +92,12 @@
         
     }
 
-    const handleSubmit = (values) =>{
+    const handleSubmit = (values,actions) =>{
+        console.log(actions);
         if(editing.value){
-            updateUser(values)
+            updateUser(values,actions)
         }else{
-            createuser(values )
+            createuser(values,actions )
         }
     }
 
