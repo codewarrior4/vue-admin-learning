@@ -12,6 +12,7 @@
     const formValues = ref()
     const form  = ref(null)
     const toastr = useToastr()
+    const usertoDelete = ref(null)
 
     const getUsers = () =>{
         axios.get('/api/users')
@@ -112,6 +113,21 @@
         formValues.value = ''
     }
 
+    const deleteUserPrompt = (user) =>{
+        usertoDelete.value = user.id
+        $('#deleteUserModal').modal('show') 
+    }
+
+    const deleteUser = () =>{
+        axios.delete(`/api/users/${usertoDelete.value}`).then((response) =>{
+            $('#deleteUserModal').modal('hide')
+            getUsers()
+            toastr.success('User deleted Successfully')
+        }).catch((error) =>{
+            console.log(error)
+        })
+    }
+
     onMounted(() => {
         getUsers()
         
@@ -167,7 +183,12 @@
                                     @click.prevent="editUser(user)"
                                     >
                                     <i class="fa fa-edit"></i>
-                                </a></td>
+
+                                </a>
+                                <a href="#" @click.prevent="deleteUserPrompt(user)">
+                                    <i class="fa fa-trash text-danger ml-2"></i>
+                                    </a>
+                            </td>
 
                             </tr>
                         </tbody>
@@ -177,52 +198,73 @@
              </div>
 
 
-             <div class="modal fade" id="createUserModal" data-backdrop="static" tabindex="-1" role="dialog"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">
-                        <span v-if="editing">Edit User</span>
-                        <span v-else>Add New User</span>
-                    </h5>
-                    <button type="button" class="close" @click="closeModal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <Form  ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors}" :initial-values="formValues">
-                    <div class="modal-body"> 
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <Field type="text" name ="name" class="form-control " id="name"
-                                aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.name }" />
-                                <span class="invalid-feedback">{{ errors.name }}</span>
+            <div class="modal fade" id="createUserModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span v-if="editing">Edit User</span>
+                                <span v-else>Add New User</span>
+                            </h5>
+                            <button type="button" class="close" @click="closeModal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
+                        <Form  ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors}" :initial-values="formValues">
+                            <div class="modal-body"> 
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <Field type="text" name ="name" class="form-control " id="name"
+                                        aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.name }" />
+                                        <span class="invalid-feedback">{{ errors.name }}</span>
+                                </div>
 
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <Field type="email" name ="email" class="form-control " id="email"
-                                aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.email }" />
-                                <span class="invalid-feedback">{{ errors.email }}</span>
-                        </div> 
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <Field type="email" name ="email" class="form-control " id="email"
+                                        aria-describedby="nameHelp" placeholder="Enter full name" :class="{'is-invalid' :errors.email }" />
+                                        <span class="invalid-feedback">{{ errors.email }}</span>
+                                </div> 
 
-                    <div class="form-group">
-                        <label for="email">Password</label>
-                        <Field type="password" name ="password" class="form-control " id="password"
-                            aria-describedby="nameHelp" placeholder="Enter password" :class="{'is-invalid' :errors.password }" />
-                            <span class="invalid-feedback">{{ errors.password }}</span>
+                                <div class="form-group">
+                                    <label for="email">Password</label>
+                                    <Field type="password" name ="password" class="form-control " id="password"
+                                        aria-describedby="nameHelp" placeholder="Enter password" :class="{'is-invalid' :errors.password }" />
+                                        <span class="invalid-feedback">{{ errors.password }}</span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </Form>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </Form>
+                </div>        
             </div>
-        </div>
-    </div>
 
              
+            <div class="modal fade" id="deleteUserModal" data-backdrop="static" tabindex="-2" role="dialog"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Delete User</span>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Are you sure you want to delete this user ?</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button @click.prevent="deleteUser" type="button" class="btn btn-primary">Delete User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>   
