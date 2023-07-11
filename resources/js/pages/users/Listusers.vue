@@ -179,7 +179,7 @@
                                     <a href="mailto:{{user.email }}" target="_blank">{{ user.email }} </a>
                                 </td>
                                 <td>{{ formatDate(user.created_at) }}</td>
-                                <td> </td>
+                                <td> {{ user.role }}</td>
                                 <td><a href="#"
                                     @click.prevent="editUser(user)"
                                     >
