@@ -5,8 +5,7 @@
     import {Form,Field} from 'vee-validate'
     import * as yup from 'yup'
     import {useToastr} from '../../utils/toaster'
-    import moment from 'moment'
-    import {formatDate} from '../../utils/helper'
+    import ListusersItem from './ListusersItem.vue'
 
 
     const users =  ref([])
@@ -14,7 +13,6 @@
     const formValues = ref()
     const form  = ref(null)
     const toastr = useToastr()
-    const usertoDelete = ref(null)
 
     const getUsers = () =>{
         axios.get('/api/users')
@@ -115,20 +113,6 @@
         formValues.value = ''
     }
 
-    const deleteUserPrompt = (user) =>{
-        usertoDelete.value = user.id
-        $('#deleteUserModal').modal('show') 
-    }
-
-    const deleteUser = () =>{
-        axios.delete(`/api/users/${usertoDelete.value}`).then((response) =>{
-            $('#deleteUserModal').modal('hide')
-            getUsers()
-            toastr.success('User deleted Successfully')
-        }).catch((error) =>{
-            console.log(error)
-        })
-    }
 
     onMounted(() => {
         getUsers()
@@ -172,26 +156,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(user, index) in users" :key="user.id">
-                                <td>{{ index +1 }}</td>
-                                <td>{{user.name}}</td>
-                                <td>
-                                    <a href="mailto:{{user.email }}" target="_blank">{{ user.email }} </a>
-                                </td>
-                                <td>{{ formatDate(user.created_at) }}</td>
-                                <td> {{ user.role }}</td>
-                                <td><a href="#"
-                                    @click.prevent="editUser(user)"
-                                    >
-                                    <i class="fa fa-edit"></i>
-
-                                </a>
-                                <a href="#" @click.prevent="deleteUserPrompt(user)">
-                                    <i class="fa fa-trash text-danger ml-2"></i>
-                                    </a>
-                            </td>
-
-                            </tr>
+                            <ListusersItem v-for="(user,index) in users" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser"  />
                         </tbody>
                         
                     </table>
@@ -244,28 +209,7 @@
             </div>
 
              
-            <div class="modal fade" id="deleteUserModal" data-backdrop="static" tabindex="-2" role="dialog"
-                aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">
-                                <span>Delete User</span>
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h5>Are you sure you want to delete this user ?</h5>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button @click.prevent="deleteUser" type="button" class="btn btn-primary">Delete User</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
         </div>
     </div>   
