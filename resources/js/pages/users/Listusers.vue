@@ -5,6 +5,8 @@
     import {Form,Field} from 'vee-validate'
     import * as yup from 'yup'
     import {useToastr} from '../../utils/toaster'
+    import moment from 'moment'
+    import {formatDate} from '../../utils/helper'
 
 
     const users =  ref([])
@@ -130,7 +132,6 @@
 
     onMounted(() => {
         getUsers()
-        
     })
 </script>
 
@@ -177,8 +178,8 @@
                                 <td>
                                     <a href="mailto:{{user.email }}" target="_blank">{{ user.email }} </a>
                                 </td>
-                                <td>{{ user.created_at }}</td>
-                                <td>2020-01-01</td>
+                                <td>{{ formatDate(user.created_at) }}</td>
+                                <td> </td>
                                 <td><a href="#"
                                     @click.prevent="editUser(user)"
                                     >
