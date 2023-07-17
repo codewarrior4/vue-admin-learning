@@ -7,15 +7,16 @@
     import {useToastr} from '../../utils/toaster'
     import ListusersItem from './ListusersItem.vue'
     import { debounce } from 'lodash';
+    import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 
-    const users =  ref([])
+    const users =  ref({'data':[]})
     const editing = ref(false)
     const formValues = ref()
     const form  = ref(null)
     const toastr = useToastr()
 
-    const getUsers = () =>{
-        axios.get('/api/users')
+    const getUsers = (page = 1) =>{
+        axios.get(`/api/users?page=${page}`)
         .then(response => {
             users.value = response.data 
         })
@@ -183,8 +184,8 @@
                                 <th>Options</th>
                             </tr>
                         </thead>
-                        <tbody v-if="users.length > 0">
-                            <ListusersItem v-for="(user,index) in users" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser"  />
+                        <tbody v-if="users.data.length > 0">
+                            <ListusersItem v-for="(user,index) in users.data" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser"  />
                         </tbody>
                         <tbody v-else>
                             <tr>
@@ -194,7 +195,12 @@
                         
                     </table>
                 </div>
-             </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <Bootstrap4Pagination :data="users" :limit="10" :show-disabled="true" :align="'center'" @pagination-change-page="getUsers" />
+                <!-- {{ pagination }} -->
+
+            </div>
 
 
             <div class="modal fade" id="createUserModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
