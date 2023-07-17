@@ -25,11 +25,12 @@
     const toastr = useToastr()
 
     const deleteUserPrompt = (user) =>{
-        usertoDelete.value = user.id
+        usertoDelete.value = user.id 
         $('#deleteUserModal').modal('show') 
     }
 
     const deleteUser = () =>{
+        console.log(usertoDelete.value);
         axios.delete(`/api/users/${usertoDelete.value}`).then((response) =>{
             $('#deleteUserModal').modal('hide')
             getUsers()

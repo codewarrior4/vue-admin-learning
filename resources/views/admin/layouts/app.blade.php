@@ -203,14 +203,14 @@
                                 </router-link>
                             </li>
                             <li class="nav-item ">
-                                <router-link active-class="active" to="/admin/logout" class="nav-link ">
+                                <a active-class="active"  class="nav-link ">
                                     
                                     <i class="nav-icon fas fa-sign-out-alt"></i>
                                     <p>
                                         Logout
                                     
                                     </p>
-                                </router-link>
+                                </a>
                             </li>
                             
                         </ul>

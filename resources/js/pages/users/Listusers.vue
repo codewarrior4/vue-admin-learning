@@ -1,12 +1,12 @@
 <script setup>
 
-    import { onMounted,ref } from 'vue'
+    import { onMounted,ref,watch } from 'vue'
     import axios from 'axios' 
     import {Form,Field} from 'vee-validate'
     import * as yup from 'yup'
     import {useToastr} from '../../utils/toaster'
     import ListusersItem from './ListusersItem.vue'
-
+    import { debounce } from 'lodash';
 
     const users =  ref([])
     const editing = ref(false)
@@ -113,6 +113,28 @@
         formValues.value = ''
     }
 
+    const searchQuery = ref(null)
+
+    const search = () =>{
+        axios.get('/api/users/search?query='+searchQuery.value)
+        .then(response => {
+            users.value = response.data 
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+
+    watch(searchQuery, debounce(() => {
+        search();
+    }, 300));
+
+    
+    const userDeleted = (userId) =>{
+        const index = users.value.findIndex(user =>user.id === userId)
+        users.value.splice(index,1)
+    } 
+
 
     onMounted(() => {
         getUsers()
@@ -139,9 +161,15 @@
     <div class="content">
         <div class="container-fluid">
              <!-- creeate a bootstrap datatable  -->
-             <button type="button" class="mb-4 btn btn-primary" @click="addUser">
-                Add new User
-            </button>
+            
+            <div class="d-flex justify-content-between">
+                <button type="button" class="mb-4 btn btn-primary" @click="addUser">
+                    Add new User
+                </button>
+                <div>
+                    <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
+                </div>
+            </div>
              <div class="card">
                 <div class="card-body">
                     <table class="table table-light table-bordered">
@@ -155,8 +183,13 @@
                                 <th>Options</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="users.length > 0">
                             <ListusersItem v-for="(user,index) in users" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser"  />
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td colspan="6" class="text-center">No users found</td>
+                            </tr>
                         </tbody>
                         
                     </table>

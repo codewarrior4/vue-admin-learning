@@ -47,6 +47,7 @@ class UserController extends Controller
         return $user;
     }
 
+
     public function updateRoles(User $user){
         $user->update([
             'role' => (request('role'))
@@ -59,4 +60,12 @@ class UserController extends Controller
         $user->delete();
         return response()->noContent();
     }
+
+    public function userSearch(){
+        $query = request('query'); 
+        $users = User::where('name', 'like', "%{$query}%")->get();
+        return response()->json($users);
+    }
+    
+    
 }
