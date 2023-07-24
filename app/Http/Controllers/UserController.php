@@ -7,11 +7,8 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    //
-
-    public function __invoke()
-    {
-        
+    public function __invoke(){
+        return view('admin.layouts.app');
     }
     
     public function index(){ 

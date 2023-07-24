@@ -1,3 +1,25 @@
+<script setup>
+    import {ref,onMounted } from 'vue'
+    import axios from 'axios'
+    import {formatDate} from '../../utils/helper'
+
+    const appointments = ref([]);
+    const getAppointments = () =>{
+        axios.get('/api/appointments')
+        .then(response=> {
+            appointments.value = response.data
+            console.log(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+
+    onMounted(() =>{
+        getAppointments()
+    })
+</script>
+
 <template >
     <div class="content-header">
         <div class="container-fluid">
@@ -50,20 +72,20 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Client Name</th>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Time</th>
+                                        <th scope="col">Start Time </th>
+                                        <th scope="col">End Time</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Options</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Mr. Martin Glover MD</td>
-                                        <td>2023-01-27</td>
-                                        <td>05:40 PM</td>
+                                    <tr  v-for="(appointment,index) in appointments.data" :key="appointment.id">
+                                        <td>{{ index+1 }}</td>
+                                        <td>{{appointment.client.firstname}} {{appointment.client.lastname}}</td>
+                                        <td>{{formatDate(appointment.start)}}</td>
+                                        <td>{{formatDate(appointment.end)}}</td>
                                         <td>
-                                            <span class="badge badge-success">closed</span>
+                                            <span class="badge" :class="`badge-${ appointment.status.color}`">{{appointment.status.name}}</span>
                                         </td>
                                         <td>
                                             <a href="">

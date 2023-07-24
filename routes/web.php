@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// users
  
 Route::get('/api/users',[UserController::class,'index']);
 Route::post('/api/users',[UserController::class,'store']);
@@ -27,6 +30,9 @@ Route::put('/api/users/{user}/role',[UserController::class,'updateRoles']);
 Route::get('/api/users/search',  [UserController::class,'userSearch']);
 Route::delete('/api/users',[UserController::class,'bulkDelete']);
 
+
+// appointments
+Route::get('/api/appointments',[AppointmentController::class,'index']);
 
 
 Route::get('{view}',ApplicationController::class)->where('view','(.*)');
