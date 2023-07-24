@@ -3,9 +3,18 @@
     import axios from 'axios'
     import {formatDate} from '../../utils/helper'
 
+    const appointmentStatus ={
+        'scheduled': 1,
+        'confirmed': 2,
+        'cancelled': 3,
+    }
     const appointments = ref([]);
-    const getAppointments = () =>{
-        axios.get('/api/appointments')
+    const getAppointments = (status) =>{
+        const params ={}
+        if(status){
+            params.status = status
+        }
+        axios.get('/api/appointments',{params})
         .then(response=> {
             appointments.value = response.data
             console.log(response.data)
@@ -49,19 +58,24 @@
                             </a>
                         </div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-secondary">
+                            <button @click.prevent="getAppointments()" type="button" class="btn btn-secondary">
                                 <span class="mr-1">All</span>
                                 <span class="badge badge-pill badge-info">1</span>
                             </button>
 
-                            <button type="button" class="btn btn-default">
+                            <button @click.prevent="getAppointments(appointmentStatus.scheduled)" type="button" class="btn btn-default">
                                 <span class="mr-1">Scheduled</span>
                                 <span class="badge badge-pill badge-primary">0</span>
                             </button>
 
-                            <button type="button" class="btn btn-default">
-                                <span class="mr-1">Closed</span>
+                            <button @click.prevent="getAppointments(appointmentStatus.confirmed)" type="button" class="btn btn-default">
+                                <span class="mr-1">Confirmed</span>
                                 <span class="badge badge-pill badge-success">1</span>
+                            </button>
+
+                            <button @click.prevent="getAppointments(appointmentStatus.cancelled)" type="button" class="btn btn-default">
+                                <span class="mr-1">Cancelled</span>
+                                <span class="badge badge-pill badge-danger">1</span>
                             </button>
                         </div>
                     </div>
