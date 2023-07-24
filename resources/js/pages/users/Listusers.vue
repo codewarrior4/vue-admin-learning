@@ -19,6 +19,8 @@
         axios.get(`/api/users?page=${page}`)
         .then(response => {
             users.value = response.data 
+            selectAll.value = false
+            selectedUsers.value= []
         })
         .catch(error => {
             console.log(error)
@@ -156,11 +158,28 @@
             getUsers()
             toastr.success(response.data.message)
             selectedUsers.value =[]
+            selectAll.value=false
         }).catch((error)=>{
             console.log(error)
         })
     }
 
+    const selectAll = ref(false)
+    const selectAllUsers = () =>{
+        if(selectAll.value){
+            selectedUsers.value = users.value.data.map(user => user.id)
+
+        } else{
+            selectedUsers.value = []
+        }
+        console.log(selectedUsers.value)
+         
+    }
+
+    const toggleAll = () =>{
+        selectAll.value = !selectAll.value
+        selectAllUsers()
+    }
     onMounted(() => {
         getUsers()
     })
@@ -188,13 +207,19 @@
              <!-- creeate a bootstrap datatable  -->
             
             <div class="d-flex justify-content-between">
-                <div>
-                    <button v-if="selectedUsers.length >0" type="button" class="mb-4 btn btn-danger mr-4" @click.prevent="bulkDelete">
-                    Delete Selected User
+                <div class="d-flex">
+                   
+                    <button type="button" class="mb-4 btn btn-primary" @click="addUser">
+                        <i class="fa fa-plus-circle mr-2"></i>
+                        Add new User
                     </button>
-                <button type="button" class="mb-4 btn btn-primary" @click="addUser">
-                    Add new User
-                </button>
+                    <div class="ml-2" v-if="selectedUsers.length >0">
+                        <button  type="button" class="mb-4 btn btn-danger mr-4" @click.prevent="bulkDelete">
+                            <i class="fa fa-trash mr-2"></i>
+                            Delete Selected 
+                        </button>
+                        <span class="ml-2">Selected {{selectedUsers.length}} users</span>
+                    </div>
                 </div>
                 <div>
                     <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
@@ -205,7 +230,7 @@
                     <table class="table table-light table-bordered">
                         <thead class="thead-light">
                             <tr>
-                                <th><input type="checkbox" name="" id=""/></th>
+                                <th><input type="checkbox" @click.prevent="toggleAll" v-model="selectAll" @change="selectAllUsers"  /></th>
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -215,7 +240,7 @@
                             </tr>
                         </thead>
                         <tbody v-if="users.data.length > 0">
-                            <ListusersItem v-for="(user,index) in users.data" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser" @toggleSelection="toggleSelection" />
+                            <ListusersItem v-for="(user,index) in users.data" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser" @toggleSelection="toggleSelection" :select-all="selectAll" />
                         </tbody>
                         <tbody v-else>
                             <tr>
