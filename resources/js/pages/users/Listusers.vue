@@ -136,6 +136,30 @@
         users.value.splice(index,1)
     } 
 
+    const selectedUsers = ref([])
+    const toggleSelection = (user) =>{
+        const index = selectedUsers.value.indexOf(user.id)
+        if(index === -1){
+            selectedUsers.value.push(user.id)
+        } else{
+            selectedUsers.value.splice(index,1)
+        }
+        console.log(selectedUsers.value)
+    }
+
+    const bulkDelete = () =>{
+        axios.delete(`/api/users`,{
+            data:{
+                ids:selectedUsers.value
+            }
+        }).then((response) =>{
+            getUsers()
+            toastr.success(response.data.message)
+            selectedUsers.value =[]
+        }).catch((error)=>{
+            console.log(error)
+        })
+    }
 
     onMounted(() => {
         getUsers()
@@ -164,9 +188,14 @@
              <!-- creeate a bootstrap datatable  -->
             
             <div class="d-flex justify-content-between">
+                <div>
+                    <button v-if="selectedUsers.length >0" type="button" class="mb-4 btn btn-danger mr-4" @click.prevent="bulkDelete">
+                    Delete Selected User
+                    </button>
                 <button type="button" class="mb-4 btn btn-primary" @click="addUser">
                     Add new User
                 </button>
+                </div>
                 <div>
                     <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
                 </div>
@@ -176,6 +205,7 @@
                     <table class="table table-light table-bordered">
                         <thead class="thead-light">
                             <tr>
+                                <th><input type="checkbox" name="" id=""/></th>
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -185,7 +215,7 @@
                             </tr>
                         </thead>
                         <tbody v-if="users.data.length > 0">
-                            <ListusersItem v-for="(user,index) in users.data" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser"  />
+                            <ListusersItem v-for="(user,index) in users.data" :key="user.id" :user="user" :index="index" @user-deleted="userDeleted" @edit-user="editUser" @toggleSelection="toggleSelection" />
                         </tbody>
                         <tbody v-else>
                             <tr>

@@ -25,6 +25,8 @@ Route::put('/api/users/{user}',[UserController::class,'update']);
 Route::delete('/api/users/{user}',[UserController::class,'destroy']);
 Route::put('/api/users/{user}/role',[UserController::class,'updateRoles']);
 Route::get('/api/users/search',  [UserController::class,'userSearch']);
+Route::delete('/api/users',[UserController::class,'bulkDelete']);
+
 
 
 Route::get('{view}',ApplicationController::class)->where('view','(.*)');

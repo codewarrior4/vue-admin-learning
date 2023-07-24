@@ -5,7 +5,7 @@
     
     const usertoDelete = ref(null)
 
-    defineProps({
+    const props = defineProps({
         user:Object,
         index:Number
     })
@@ -63,10 +63,15 @@
             console.log(error)
         })
     }
+
+    const toggleSelection = () => {
+        emit('toggleSelection',props.user)
+    }
 </script>
 
 <template>
     <tr>
+        <td><input type="checkbox" @change="toggleSelection"/></td>
         <td>{{ index +1 }}</td>
         <td>{{user.name}}</td>
         <td>
