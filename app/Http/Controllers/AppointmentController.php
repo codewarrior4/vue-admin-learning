@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class AppointmentController extends Controller
     }
 
     public function index(){
-
+ 
         return Appointment::query()
             ->with('client:id,firstname,lastname')
             ->when(request('status'), function($query){
@@ -33,5 +34,20 @@ class AppointmentController extends Controller
                 ],
                 
             ]);
+    }
+
+    public function getStatusWithCount(){
+        $cases = AppointmentStatus::cases();
+ 
+        return collect($cases)->map( function($status){
+            $count = Appointment::where('status',$status)->count();
+            return [
+                'name'=>$status->name,
+                'value'=>$status->value,
+                'color'=>$status->color(),
+                'count'=>$count
+            ];
+        });
+        
     }
 }

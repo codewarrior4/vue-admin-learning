@@ -1,13 +1,20 @@
 <script setup>
-    import {ref,onMounted } from 'vue'
+    import {ref,onMounted,computed } from 'vue'
     import axios from 'axios'
     import {formatDate} from '../../utils/helper'
 
-    const appointmentStatus ={
-        'scheduled': 1,
-        'confirmed': 2,
-        'cancelled': 3,
-    }
+
+    const selectedStatus = ref()
+    const appointmentStatus =ref([])
+    const getAppointmentStatus = async () => {
+        try {
+            const response = await axios.get('/api/appointments-status');
+            appointmentStatus.value = response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const appointments = ref([]);
     const getAppointments = (status) =>{
         const params ={}
@@ -17,16 +24,18 @@
         axios.get('/api/appointments',{params})
         .then(response=> {
             appointments.value = response.data
-            console.log(response.data)
+            selectedStatus.value = status
         })
         .catch(error => {
             console.log(error)
         })
     }
 
+    
     onMounted(() =>{
         getAppointments()
-    })
+        getAppointmentStatus()
+    }) 
 </script>
 
 <template >
@@ -58,24 +67,14 @@
                             </a>
                         </div>
                         <div class="btn-group">
-                            <button @click.prevent="getAppointments()" type="button" class="btn btn-secondary">
+                            <button @click.prevent="getAppointments()" type="button" class="btn" :class="[typeof selectedStatus === 'undefined' ? 'btn-secondary' : 'btn-default']">
                                 <span class="mr-1">All</span>
-                                <span class="badge badge-pill badge-info">1</span>
-                            </button>
+                                <span class="badge badge-pill badge-info">{{ sum }}</span>
+                            </button> 
 
-                            <button @click.prevent="getAppointments(appointmentStatus.scheduled)" type="button" class="btn btn-default">
-                                <span class="mr-1">Scheduled</span>
-                                <span class="badge badge-pill badge-primary">0</span>
-                            </button>
-
-                            <button @click.prevent="getAppointments(appointmentStatus.confirmed)" type="button" class="btn btn-default">
-                                <span class="mr-1">Confirmed</span>
-                                <span class="badge badge-pill badge-success">1</span>
-                            </button>
-
-                            <button @click.prevent="getAppointments(appointmentStatus.cancelled)" type="button" class="btn btn-default">
-                                <span class="mr-1">Cancelled</span>
-                                <span class="badge badge-pill badge-danger">1</span>
+                            <button v-for="status in appointmentStatus" @click="getAppointments(status.value)" type="button" class="btn " :class="[selectedStatus === status.value ? 'btn-secondary' :'btn-default']">
+                                <span class="mr-1">{{status.name}}</span>
+                                <span class="badge badge-pill" :class="`badge-${status.color}`">{{ status.count }}</span>
                             </button>
                         </div>
                     </div>
