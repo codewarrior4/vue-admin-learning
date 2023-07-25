@@ -50,4 +50,28 @@ class AppointmentController extends Controller
         });
         
     }
+
+    public function store(){
+        // dd(request()->all());
+        // $data = request()->validate([
+        //     'start'=>'required|date',
+        //     'end'=>'required|date',
+        //     'client_id'=>'required|exists:clients,id',
+        //     'status'=>'required|in:'.implode(',',AppointmentStatus::getValues())
+        // ]);
+
+        $appointment = Appointment::create([
+            'start'=>now(),
+            'end'=>now(),
+            'client_id'=>1,
+            'status'=>AppointmentStatus::SCHEDULED,
+            'title' =>request('title'),
+            'description' =>request('description'),
+        ]);
+
+        return response()->json([
+            'message'=>'Appointment created successfully',
+            'appointment'=>$appointment
+        ]);
+    }
 }

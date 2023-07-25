@@ -1,5 +1,6 @@
 import Dashboard from './components/Dashboard.vue'
 import Appointments from './pages/appointments/Listappointments.vue'
+import AppointmentsCreate from './pages/appointments/AppointmentsCreate.vue'
 import Users from './pages/users/Listusers.vue'
 import UpdateSettings from './pages/settings/UpdateSettings.vue'
 import UpdateProfile from './pages/profile/UpdateProfile.vue'
@@ -15,6 +16,11 @@ export default [
         path:'/admin/appointments',
         name:'admin.appointments',
         component:Appointments
+    },
+    {
+        path:'/admin/appointments/create',
+        name:'admin.appointments.create',
+        component:AppointmentsCreate
     },
     {
         path:'/admin/users',
