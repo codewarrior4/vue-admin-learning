@@ -52,13 +52,13 @@ class AppointmentController extends Controller
     }
 
     public function store(){
-        // dd(request()->all());
-        // $data = request()->validate([
-        //     'start'=>'required|date',
-        //     'end'=>'required|date',
-        //     'client_id'=>'required|exists:clients,id',
-        //     'status'=>'required|in:'.implode(',',AppointmentStatus::getValues())
-        // ]);
+        request()->validate([
+            // 'start'=>'required|date',
+            // 'end'=>'required|date',
+            // 'client_id'=>'required|exists:clients,id',
+            'description' =>'required',
+            'title' => 'required'
+        ]);
 
         $appointment = Appointment::create([
             'start'=>now(),
