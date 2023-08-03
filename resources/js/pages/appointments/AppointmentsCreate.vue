@@ -1,22 +1,25 @@
 <script setup>
 import axios from 'axios';
-import {reactive} from 'vue'
+import {reactive,onMounted,ref} from 'vue'
 import { useToastr } from '../../utils/toaster';
 import {useRouter} from 'vue-router'
 import {Form } from 'vee-validate'
+import flatpickr from 'flatpickr'
+import 'flatpickr/dist/themes/light.css'
 
 
 const form = reactive({
     title:'',
     client_id:'',
-    start:'',
-    end:'',
+    start_date:'',
+    end_date:'',
     description:''
 })
 
 const router = useRouter()
 
 const toaster = useToastr()
+const clients = ref()
 
 const handleSubmit = (values, action) =>{
     axios.post('/api/appointments/create',form)
@@ -28,6 +31,27 @@ const handleSubmit = (values, action) =>{
         action.setErrors(error.response.data.errors)
     })
 }
+
+const getclients = () =>{
+    axios.get('/api/clients')
+    .then(response => {
+        clients.value = response.data
+    })
+    .catch((error) =>{
+        console.log(error.response.data)
+    })
+}
+
+onMounted(() =>{
+    flatpickr(".flatpickr",{
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: "today", 
+        disableMobile: "true",
+        defaultHour:10, 
+    })
+    getclients()
+})
 </script>
 
 <template>
@@ -70,24 +94,26 @@ const handleSubmit = (values, action) =>{
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="client">Client Name</label>
-                                            <select id="client" v-model="form.client_id" class="form-control">
-                                                <option>Client One</option>
-                                                <option>Client Two</option>
+                                            <select id="client" v-model="form.client_id" class="form-control" :class="{'is-invalid':errors.client_id}"  >
+                                                <option v-for="client in clients" :key="client.id" :value="client.id">{{client.firstname}} {{ client.lastname }}</option>
                                             </select>
+                                            <span class="invalid-feedback">{{ errors.client_id}}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="date">Appointment Date</label>
-                                            <input type="start" class="form-control" id="date">
+                                            <label for="date">Start Date</label>
+                                            <input type="date" v-model="form.start_date" class="form-control flatpickr" id="date" :class="{'is-invalid' : errors.start_date}" >
+                                            <span class="invalid-feedback">{{ errors.start_date }}</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="time">Appointment Time</label>
-                                            <input type="time" class="form-control" id="time">
+                                            <label for="time">End Date</label>
+                                            <input type="date" v-model="form.end_date" class="form-control flatpickr" id="time" :class="{'is-invalid' : errors.end_date}" >
+                                            <span class="invalid-feedback">{{ errors.end_date }}</span>
                                         </div>
                                     </div>
                                 </div>

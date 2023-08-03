@@ -53,17 +53,20 @@ class AppointmentController extends Controller
 
     public function store(){
         request()->validate([
-            // 'start'=>'required|date',
-            // 'end'=>'required|date',
-            // 'client_id'=>'required|exists:clients,id',
+            'start_date'=>'required|date',
+            'end_date'=>'required|date',
+            'client_id'=>'required|exists:clients,id',
             'description' =>'required',
             'title' => 'required'
+        ],[
+            'client_id.exists'=>'The selected client does not exist',
+            'client_id.required'=> 'The client field is required'
         ]);
 
         $appointment = Appointment::create([
-            'start'=>now(),
-            'end'=>now(),
-            'client_id'=>1,
+            'start'=> request('start_date'),
+            'end'=>request('end_date'),
+            'client_id'=>request('client_id'),
             'status'=>AppointmentStatus::SCHEDULED,
             'title' =>request('title'),
             'description' =>request('description'),
