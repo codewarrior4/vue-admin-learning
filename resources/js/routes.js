@@ -23,6 +23,11 @@ export default [
         component:AppointmentsCreate
     },
     {
+        path:'/admin/appointments/:id/edit',
+        name:'admin.appointments.edit',
+        component:AppointmentsCreate
+    },
+    {
         path:'/admin/users',
         name:'admin.users',
         component:Users

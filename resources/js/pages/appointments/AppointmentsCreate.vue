@@ -2,11 +2,14 @@
 import axios from 'axios';
 import {reactive,onMounted,ref} from 'vue'
 import { useToastr } from '../../utils/toaster';
-import {useRouter} from 'vue-router'
+import {useRouter,useRoute} from 'vue-router'
 import {Form } from 'vee-validate'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/themes/light.css'
 
+
+
+const editMode = ref(false)
 
 const form = reactive({
     title:'',
@@ -16,13 +19,35 @@ const form = reactive({
     description:''
 })
 
+
 const router = useRouter()
+const route = useRoute()
 
 const toaster = useToastr()
 const clients = ref()
 
 const handleSubmit = (values, action) =>{
+    if(editMode){
+        editAppointment(values,action)
+    } else{
+        createAppointment(values,action)
+    }
+   
+}
+
+const createAppointment = (values, action) => {
     axios.post('/api/appointments/create',form)
+    .then(response => {
+        toaster.success(response.data.message)
+        router.push('/admin/appointments')
+    })
+    .catch((error) =>{
+        action.setErrors(error.response.data.errors)
+    })
+}
+
+const editAppointment = (values,action) => {
+    axios.put(`/api/appointments/${route.params.id}`,form)
     .then(response => {
         toaster.success(response.data.message)
         router.push('/admin/appointments')
@@ -42,6 +67,21 @@ const getclients = () =>{
     })
 }
 
+const getAppointment = () =>{
+    axios.get(`/api/appointments/${route.params.id}/edit`)
+    .then(response => {
+        form.title = response.data.title
+        form.client_id = response.data.client_id
+        form.start_date = response.data.formattedStart
+        form.end_date = response.data.formattedEnd
+        form.description = response.data.description
+    })
+    .catch((error) =>{
+        console.log(error.response.data)
+    })
+
+} 
+
 onMounted(() =>{
     flatpickr(".flatpickr",{
         enableTime: true,
@@ -51,6 +91,10 @@ onMounted(() =>{
         defaultHour:10, 
     })
     getclients()
+    if(route.name === 'admin.appointments.edit'){
+        editMode.value = true
+        getAppointment()
+    }
 })
 </script>
 
@@ -59,7 +103,11 @@ onMounted(() =>{
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Create Appointment</h1>
+                    <h1 class="m-0">
+                        <span v-if="editMode">Edit</span>
+                        <span v-else>Create</span>
+                        
+                        Appointment</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">

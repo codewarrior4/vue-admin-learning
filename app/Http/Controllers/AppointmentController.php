@@ -77,4 +77,42 @@ class AppointmentController extends Controller
             'appointment'=>$appointment
         ]);
     }
+
+    public function edit(Appointment $appointment){
+        return $appointment;
+    }
+
+    public function update(Appointment $appointment){
+        request()->validate([
+            'start_date'=>'required|date',
+            'end_date'=>'required|date',
+            'client_id'=>'required|exists:clients,id',
+            'description' =>'required',
+            'title' => 'required'
+        ],[
+            'client_id.exists'=>'The selected client does not exist',
+            'client_id.required'=> 'The client field is required'
+        ]);
+
+        $appointment->update([
+            'start'=> request('start_date'),
+            'end'=>request('end_date'),
+            'client_id'=>request('client_id'),
+            'status'=>AppointmentStatus::SCHEDULED,
+            'title' =>request('title'),
+            'description' =>request('description'),
+        ]);
+
+        return response()->json([
+            'message'=>'Appointment updated successfully',
+            'appointment'=>$appointment
+        ]);
+    }
+
+    public function destroy(Appointment $appointment){
+        $appointment->delete();
+        return response()->json([
+            'message'=>'Appointment deleted successfully',
+        ]);
+    }
 }

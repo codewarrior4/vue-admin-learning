@@ -2,6 +2,8 @@
     import {ref,onMounted,computed } from 'vue'
     import axios from 'axios'
     import {formatDate} from '../../utils/helper'
+    import Swal from 'sweetalert2'
+
 
 
     const selectedStatus = ref()
@@ -31,6 +33,33 @@
         })
     }
 
+
+    const deleteAppointment = (id) =>{
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton:true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) =>{
+            if(result.isConfirmed){
+                axios.delete(`/api/appointments/${id}`)
+                .then(response => {
+                    Swal.fire(
+                        'Deleted!',
+                        'Appointment has been deleted.',
+                        'success'
+                    )
+                    getAppointments()
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
+        })
+    }
     
     onMounted(() =>{
         getAppointments()
@@ -69,7 +98,7 @@
                         <div class="btn-group">
                             <button @click.prevent="getAppointments()" type="button" class="btn" :class="[typeof selectedStatus === 'undefined' ? 'btn-secondary' : 'btn-default']">
                                 <span class="mr-1">All</span>
-                                <span class="badge badge-pill badge-info">{{ sum }}</span>
+                                <span class="badge badge-pill badge-info"></span>
                             </button> 
 
                             <button v-for="status in appointmentStatus" @click="getAppointments(status.value)" type="button" class="btn " :class="[selectedStatus === status.value ? 'btn-secondary' :'btn-default']">
@@ -101,11 +130,11 @@
                                             <span class="badge" :class="`badge-${ appointment.status.color}`">{{appointment.status.name}}</span>
                                         </td>
                                         <td>
-                                            <a href="">
+                                            <router-link :to="`/admin/appointments/${appointment.id}/edit`">
                                                 <i class="fa fa-edit mr-2"></i>
-                                            </a>
+                                            </router-link>
 
-                                            <a href="">
+                                            <a @click.prevent="(deleteAppointment(appointment.id))" href="">
                                                 <i class="fa fa-trash text-danger"></i>
                                             </a>
                                         </td>
