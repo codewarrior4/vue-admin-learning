@@ -12,7 +12,21 @@ class UserController extends Controller
     }
     
     public function index(){ 
-        $users = User::latest()->paginate(2);
+        $searchQuery = request('search');
+        $users = User::query()
+            ->when($searchQuery, function($query) use ($searchQuery){
+                $query->where('name','LIKE',"%{$searchQuery}%")
+                    ->orWhere('email','LIKE',"%{$searchQuery}%");
+            })
+            ->latest()
+            ->paginate(3)
+            ->through(fn ($user) => [
+                'id'=>$user->id,
+                'name'=>$user->name,
+                'email'=>$user->email,
+                'role'=>$user->role,
+                'created_at'=>$user->created_at
+            ]);
         return $users;
     }
 
@@ -56,12 +70,6 @@ class UserController extends Controller
     public function destroy(User $user){
         $user->delete();
         return response()->noContent();
-    }
-
-    public function userSearch(){
-        $query = request('query'); 
-        $users = User::where('name', 'like', "%{$query}%")->paginate(2);
-        return response()->json($users);
     }
     
     public function bulkDelete(){ 

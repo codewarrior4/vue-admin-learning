@@ -27,8 +27,7 @@ Route::get('/api/users',[UserController::class,'index']);
 Route::post('/api/users',[UserController::class,'store']);
 Route::put('/api/users/{user}',[UserController::class,'update']);
 Route::delete('/api/users/{user}',[UserController::class,'destroy']);
-Route::put('/api/users/{user}/role',[UserController::class,'updateRoles']);
-Route::get('/api/users/search',  [UserController::class,'userSearch']);
+Route::put('/api/users/{user}/role',[UserController::class,'updateRoles']); 
 Route::delete('/api/users',[UserController::class,'bulkDelete']);
 
 

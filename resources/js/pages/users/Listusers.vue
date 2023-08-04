@@ -17,7 +17,12 @@
     const usertoDelete = ref(null)
 
     const getUsers = (page = 1) =>{
-        axios.get(`/api/users?page=${page}`)
+        axios.get(`/api/users?page=${page}`,{
+            params:{
+                search:searchQuery.value
+            }
+
+        })
         .then(response => {
             users.value = response.data 
             selectAll.value = false
@@ -119,18 +124,10 @@
 
     const searchQuery = ref(null)
 
-    const search = () =>{
-        axios.get('/api/users/search?query='+searchQuery.value)
-        .then(response => {
-            users.value = response.data 
-        })
-        .catch(error => {
-            console.log(error)
-        })
-    }
+  
 
     watch(searchQuery, debounce(() => {
-        search();
+        getUsers()
     }, 300));
 
     const selectedUsers = ref([])

@@ -61,7 +61,7 @@
         <td>{{ index +1 }}</td>
         <td>{{user.name}}</td>
         <td>
-            <a href="mailto:{{user.email }}" target="_blank">{{ user.email }} </a>
+            <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }} </a>
         </td>
         <td>{{ formatDate(user.created_at) }}</td>
         <td> 
