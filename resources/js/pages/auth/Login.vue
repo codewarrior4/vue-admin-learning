@@ -1,20 +1,25 @@
 <script setup>
     import axios from 'axios';
     import {Form } from 'vee-validate'
-    import {reactive} from 'vue'
+    import {reactive,ref} from 'vue'
 
     const form = reactive({
         email: '',
         password: ''
     })
 
+    const loading  =  ref(false)
+
     const handleSubmit = (value,actions) =>{
+        loading.value = true
         axios.post('/login',form).
-        then(() => {
-            window.location.href = '/admin/dashboard'
-        }).catch((error) =>{
-        actions.setErrors(error.response.data.errors)
-    })
+            then(() => {
+                window.location.href = '/admin/dashboard'
+            }).catch((error) =>{
+            actions.setErrors(error.response.data.errors)
+            }).finally(() =>{
+                loading.value= false
+        })
 
     }
 </script>
@@ -50,7 +55,14 @@
                 </div>
 
                 <div class="col-4">
-                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        
+                        <div v-if="loading" class="spinner-border spinner-border-sm text-light" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+
+                        <span v-else>Sign In</span>
+                    </button>
                 </div>
 
             </div>
