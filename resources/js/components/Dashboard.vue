@@ -15,8 +15,25 @@ const getAppoitnmentsCount = () =>{
     })
 }
 
+const totalUsersCount = ref(0)
+const selectedUsersStatus = ref('all');
+
+const getUsersCount = () =>{
+    axios.get('/api/stats/users',{
+        params:{
+            duration:selectedUsersStatus.value
+        },
+    }).then((response)=>{
+        console.log("user count",response);
+        totalUsersCount.value=response.data.totalUsersCount;
+    });
+}
+
+
+
 onMounted(()=>{
     getAppoitnmentsCount()
+    getUsersCount();
 })
 </script>
 <template>
@@ -70,8 +87,10 @@ onMounted(()=>{
         <div class="small-box bg-info">
             <div class="inner">
                 <div class="d-flex justify-content-between">
-                    <h3>0</h3>
+                    <h3>{{ totalUsersCount }}</h3>
                     <select
+                    @change="getUsersCount()"
+                    v-model="selectedUsersStatus"
                         style="height: 2rem; outline: 2px solid transparent;" class="px-1 rounded border-0">
                         <option value="TODAY">Today</option>
                         <option value="30">30 days</option>

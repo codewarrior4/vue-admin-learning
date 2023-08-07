@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -76,6 +77,43 @@ class UserController extends Controller
         $ids = request('ids'); 
         User::whereIn('id',$ids)->delete(); 
         return response()->json(['message'=>"User has been deleted sucessfully"]);
+    }
+
+    public function userStats(){
+        $users = User::query()
+        // Today
+        ->when(request('duration') === 'TODAY', function($query){
+            $query->where('created_at','=',now()->today());
+        })
+        // 30 days ago
+        ->when(request('duration') === '30', function ($query) {
+            $thirtyDaysAgo = Carbon::now()->subDays(30);
+            return $query->where('created_at', '>=', $thirtyDaysAgo);
+        })
+        // 60 days
+        ->when(request('duration') === '60', function ($query) {
+            
+            return $query->whereBetween('created_at',[ now()->subDays(60),now()]);
+        })
+        // 360 days
+        ->when(request('duration') === '360', function ($query) {
+            $oneYearAgo = Carbon::now()->subYear(1);
+            return $query->where('created_at', '>=', $oneYearAgo);
+        })
+        // MTD
+        ->when(request('duration') === 'MTD', function ($query) {
+            return $query->whereBetween('created_at',[ now()->firstOfMonth(),now()]);
+        })
+        // YTD
+        ->when(request('duration') === 'YTD', function ($query) {
+            return $query->whereBetween('created_at',[ now()->firstOfYear(),now()]);
+        })
+        ->count();
+
+        return [
+            "totalUsersCount" => $users
+        ];
+
     }
     
 }

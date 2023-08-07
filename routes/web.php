@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function (){
     Route::delete('/api/users/{user}',[UserController::class,'destroy']);
     Route::put('/api/users/{user}/role',[UserController::class,'updateRoles']); 
     Route::delete('/api/users',[UserController::class,'bulkDelete']);
+    Route::get('/api/stats/users',[UserController::class,'userStats']);
 
 
     // appointments
