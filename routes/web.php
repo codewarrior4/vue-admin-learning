@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function (){
 
     // appointments
     Route::get('/api/appointments',[AppointmentController::class,'index']);
+    Route::get('/api/stats/appointments',[AppointmentController::class,'appointmentStats']);
     Route::get('/api/appointments-status',[AppointmentController::class,'getStatusWithCount']);
     Route::post('/api/appointments/create',[AppointmentController::class,'store']);
     Route::get('/api/appointments/{appointment}/edit',[AppointmentController::class,'edit']);
