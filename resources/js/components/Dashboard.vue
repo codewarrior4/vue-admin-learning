@@ -58,7 +58,7 @@ onMounted(()=>{
         <div class="container-fluid">
             <div class="row">
                 <h1>Charts Display</h1>
-                <BarChart />
+                <BarChart></BarChart>
             </div>
             <div class="row mt-4">
                 <div class="col-lg-3 col-6">
