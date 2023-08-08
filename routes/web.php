@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,11 @@ Route::middleware('auth')->group(function (){
     Route::put('/api/appointments/{appointment}',[AppointmentController::class,'update']);
     Route::delete('/api/appointments/{appointment}',[AppointmentController::class,'destroy']);
     Route::get('/api/clients',[ClientsController::class,'index']);
+
+    // seetinggs
+    Route::get('api/settings',[SettingsController::class,'index']);
+    Route::post('api/settings',[SettingsController::class,'update']);
+
 
 });
 
