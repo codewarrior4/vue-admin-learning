@@ -13,8 +13,8 @@
         <div class="wrapper" id="app">
             <nav class="main-header navbar navbar-expand navbar-white navbar-light">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <li class="nav-item" id="toggleMenu">
+                        <a  class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                     </li>
                     <li class="nav-item d-none d-sm-inline-block">
                         <a href="index3.html" class="nav-link">Home</a>
@@ -227,20 +227,31 @@
                
             </div>
 
-            <aside class="control-sidebar control-sidebar-dark">
-                <div class="p-3">
-                    <h5>Title</h5>
-                    <p>Sidebar content</p>
-                </div>
-            </aside>
+            <script>
 
-            <footer class="main-footer">
-                <div class="float-right d-none d-sm-inline">
-                    Anything you want
-                </div>
+                document.addEventListener('DOMContentLoaded', () =>{
+                    const toggleMenu = document.getElementById('toggleMenu')
+                    const body = document.querySelector('body');
 
-                <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
-            </footer>
+                    toggleMenu.addEventListener('click', ()=>{
+                        if(body.classList.contains('sidebar-collapse')){
+                            localStorage.setItem('sidebarState','expanded')
+                        }else{
+                            localStorage.setItem('sidebarState','collapsed')
+                        }
+                    })
+
+                    const sidebarState = localStorage.getItem('sidebarState');
+                    if(sidebarState === 'collapsed'){
+                        body.classList.add("sidebar-collapse");
+                    }
+
+
+
+                })
+
+
+            </script>
         </div>
 
     </body>
