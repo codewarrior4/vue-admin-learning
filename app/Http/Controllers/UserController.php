@@ -20,13 +20,14 @@ class UserController extends Controller
                     ->orWhere('email','LIKE',"%{$searchQuery}%");
             })
             ->latest()
-            ->paginate(3)
+            ->paginate(setting('pagination_limit'))
             ->through(fn ($user) => [
                 'id'=>$user->id,
                 'name'=>$user->name,
                 'email'=>$user->email,
                 'role'=>$user->role,
-                'created_at'=>$user->created_at
+                'created_at'=>$user->created_at,
+                'formatted_created_at'=>$user->formatted_created_at
             ]);
         return $users;
     }

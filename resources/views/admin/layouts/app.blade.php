@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>AdminLTE 3 | Starter</title>
+        <title>{{ setting('app_name') }} | Starter</title>
 
         @vite(['resources/css/app.css','resources/js/app.js'])
       
@@ -140,7 +140,7 @@
             <aside class="main-sidebar sidebar-dark-primary elevation-4">
                 <a href="index3.html" class="brand-link">
                     <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: 0.8;" />
-                    <span class="brand-text font-weight-light">AdminLTE 3</span>
+                    <span class="brand-text font-weight-light">{{ setting('app_name') }}</span>
                 </a>
 
                 <div class="sidebar">
@@ -226,6 +226,16 @@
                 <router-view></router-view>
                
             </div>
+
+            
+
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-inline">
+                    Anything you want
+                </div>
+
+                <strong>Copyright &copy; {{ date('Y') }} <a href="https://adminlte.io">{{ setting('app_name') }}</a>.</strong> All rights reserved.
+            </footer>
 
             <script>
 
