@@ -5,7 +5,7 @@
 
     const toast = useToastr()
     const settings = ref([])
-
+    const errors = ref([])
     const getSettings = () =>{
         axios.get('/api/settings')
         .then((response) => (
@@ -16,9 +16,14 @@
     }
 
     const updateSettings = () =>{
+        errors.value = ''
         axios.post('/api/settings',settings.value)
         .then((response) =>{
             toast.success('Update Successful')
+        }).catch((error)=>{
+            if(error.response && error.response.status ===422){
+                errors.value = error.response.data.errors
+            }
         })
     }
 
@@ -58,6 +63,7 @@
                             <div class="form-group">
                                 <label for="appName">App Display Name</label>
                                 <input type="text" v-model="settings.app_name" class="form-control" id="appName" placeholder="Enter app display name">
+                                <span class="text-sm text-danger" v-if="errors && errors.app_name">{{ errors.app_name[0] }}</span>
                             </div>
                             <div class="form-group">
                                 <label for="dateFormat">Date Format</label>
@@ -68,10 +74,12 @@
                                     <option value="F j, Y">Month DD, YYYY</option>
                                     <option value="j f Y">DD Month YYYY</option>
                                 </select>
+                                <span class="text-sm text-danger" v-if="errors && errors.date_format">{{ errors.date_format[0] }}</span>
                             </div>
                             <div class="form-group">
                                 <label for="paginationLimit">Pagination Limit</label>
                                 <input type="text" v-model="settings.pagination_limit" class="form-control" id="paginationLimit" placeholder="Enter pagination limit">
+                                <span class="text-sm text-danger" v-if="errors && errors.pagination_limit">{{ errors.pagination_limit[0] }}</span>
                             </div>
                         </div>
 
