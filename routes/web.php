@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,10 @@ Route::middleware('auth')->group(function (){
     // seetinggs
     Route::get('api/settings',[SettingsController::class,'index']);
     Route::post('api/settings',[SettingsController::class,'update']);
+
+    // profile
+    Route::get('api/profile',[ProfileController::class,'index']);
+    Route::put('api/profile',[ProfileController::class,'update']);
 
 
 });
