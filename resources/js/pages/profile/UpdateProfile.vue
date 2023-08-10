@@ -12,6 +12,12 @@
         role:''
     })
 
+    const password = ref({
+        current_password : '',
+        new_password :'',
+        confirm_password : ''
+    })
+
     const getUser = () =>{
         axios.get('/api/profile')
         .then((response) => {
@@ -23,6 +29,21 @@
     const updateProfile = () =>{
         errors.value = ''
         axios.put('/api/profile',form.value)
+        .then((response)=>{
+            toast.success(response.data.success);
+        })
+        .catch((error) => {
+            if(error.response && error.response.status ===422){
+                errors.value = error.response.data.errors
+            }
+        }).finally(()=>{
+            password.value=[]
+        })
+    }
+
+    const updatePassword = () =>{
+        errors.value = ''
+        axios.put('/api/password',password.value)
         .then((response)=>{
             toast.success(response.data.success);
         })
@@ -110,26 +131,29 @@
                                 </div>
 
                                 <div class="tab-pane" id="changePassword">
-                                    <form class="form-horizontal">
+                                    <form @submit.prevent="updatePassword()" class="form-horizontal">
                                         <div class="form-group row">
                                             <label for="currentPassword" class="col-sm-3 col-form-label">Current
                                                 Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="currentPassword" placeholder="Current Password">
+                                                <input type="password" class="form-control " v-model="password.current_password" id="currentPassword" placeholder="Current Password">
+                                                <span class="text-sm text-danger" v-if="errors && errors.current_password">{{ errors.current_password[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="newPassword" class="col-sm-3 col-form-label">New
                                                 Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="newPassword" placeholder="New Password">
+                                                <input type="password" class="form-control " id="newPassword" v-model="password.new_password" placeholder="New Password">
+                                                <span class="text-sm text-danger" v-if="errors && errors.new_password">{{ errors.new_password[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="passwordConfirmation" class="col-sm-3 col-form-label">Confirm
                                                 New Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="passwordConfirmation" placeholder="Confirm New Password">
+                                                <input type="password" class="form-control " id="passwordConfirmation"  v-model="password.confirm_password" placeholder="Confirm New Password">
+                                                <span class="text-sm text-danger" v-if="errors && errors.confirm_password">{{ errors.confirm_password[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">

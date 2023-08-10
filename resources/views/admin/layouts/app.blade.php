@@ -237,32 +237,33 @@
                 <strong>Copyright &copy; {{ date('Y') }} <a href="https://adminlte.io">{{ setting('app_name') }}</a>.</strong> All rights reserved.
             </footer>
 
-            <script>
-
-                document.addEventListener('DOMContentLoaded', () =>{
-                    const toggleMenu = document.getElementById('toggleMenu')
-                    const body = document.querySelector('body');
-
-                    toggleMenu.addEventListener('click', ()=>{
-                        if(body.classList.contains('sidebar-collapse')){
-                            localStorage.setItem('sidebarState','expanded')
-                        }else{
-                            localStorage.setItem('sidebarState','collapsed')
-                        }
-                    })
-
-                    const sidebarState = localStorage.getItem('sidebarState');
-                    if(sidebarState === 'collapsed'){
-                        body.classList.add("sidebar-collapse");
-                    }
-
-
-
-                })
-
-
-            </script>
+            
         </div>
 
     </body>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () =>{
+            const toggleMenu = document.getElementById('toggleMenu')
+            const body = document.querySelector('body');
+
+            toggleMenu.addEventListener('click', ()=>{
+                if(body.classList.contains('sidebar-collapse')){
+                    localStorage.setItem('sidebarState','expanded')
+                }else{
+                    localStorage.setItem('sidebarState','collapsed')
+                }
+            })
+
+            const sidebarState = localStorage.getItem('sidebarState');
+            if(sidebarState === 'collapsed'){
+                body.classList.add("sidebar-collapse");
+            }
+
+
+
+        })
+
+
+    </script>
 </html>
