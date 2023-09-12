@@ -54,6 +54,28 @@
         })
     }
 
+    const fileInput = ref(null)
+    const openFileInput = () =>{
+        fileInput.value.click()
+    }
+
+    const profilepic = ref(null)
+
+    const handleFileChange = (e) =>{
+        const file = e.target.files[0]
+        profilepic.value = URL.createObjectURL(file)
+
+
+        const formData = new FormData();
+        formData.append('profile_picture',file)
+        axios.post('/api/profilepicture',formData)
+        .then((response)=>{
+            toast.success(response.data.success);
+        }).catch((error)=>{
+            toast.error(error.response.data.error);
+        })
+    }
+
     onMounted(() =>{
         getUser()
     })
@@ -82,8 +104,8 @@
                     <div class="card card-primary card-outline">
                         <div class="card-body box-profile">
                             <div class="text-center">
-                                <input type="file" class="d-none">
-                                <img class="profile-user-img img-circle" src="/noimage.png" alt="User profile picture">
+                                <input @change="handleFileChange" type="file" ref="fileInput"  class="d-none">
+                                <img @click="openFileInput" class="profile-user-img img-circle" :src="profilepic ? profilepic : form.avatar" alt="User profile picture">
                             </div>
 
                             <h3 class="profile-username text-center">{{ form.name }}</h3>
@@ -171,3 +193,10 @@
         </div>
     </div>
 </template>
+
+<style>
+    .profile-user-img {
+       cursor: pointer;
+       background-color: blue;
+    }
+</style>

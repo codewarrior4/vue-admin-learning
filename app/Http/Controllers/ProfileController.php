@@ -6,11 +6,12 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     public function index(Request $request){
-        return $request->user()->only(['name','email','role']);
+        return $request->user()->only(['name','email','role','avatar']);
     }
 
     public function update(Request $request){
@@ -47,5 +48,24 @@ class ProfileController extends Controller
         
         return response()->json(['success' => 'Password updated successfully'], 200);        
 
+    }
+
+    public function updateProfilePicture(Request $request){
+        if($request->hasFile('profile_picture')){
+
+            $previousPath = $request->user()->getRawOriginal('avatar');
+            $link = Storage::put('/photos/profile', $request->file('profile_picture'));
+
+            $request->user()->update(['avatar' => $link]); 
+            try {
+                Storage::delete($previousPath);
+            } catch (\Exception $e) {
+                // Log or handle the error
+                dd($e->getMessage());
+            }
+            
+        }
+
+        return response()->json(['success'=>'Profile Picture Updated successfully']);
     }
 }
